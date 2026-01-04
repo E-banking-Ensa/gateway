@@ -53,7 +53,7 @@ public class KeycloakOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
         }
 
         // Extract subject
-        String subject = Optional.ofNullable((String) response.get(OAuth2TokenIntrospectionClaimNames.SUBJECT))
+        String subject = Optional.ofNullable((String) response.get(OAuth2TokenIntrospectionClaimNames.SUB))
                 .orElse("anonymous");
 
         // Extract roles from realm_access or resource_access
