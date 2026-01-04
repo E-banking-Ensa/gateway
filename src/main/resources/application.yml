@@ -1,0 +1,126 @@
+spring:
+  application:
+    name: Api-Gateway
+  cloud:
+    gateway:
+      routes:
+        # Authentication Service
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+
+        # User Service
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+
+        # Account Service
+        - id: account-service
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/api/accounts/**
+          filters:
+            - StripPrefix=1
+
+        # Payment Service
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=1
+
+        # Crypto Service
+        - id:  crypto-service
+          uri: lb://CRYPTO-SERVICE
+          predicates:
+            - Path=/api/crypto/**
+          filters:
+            - StripPrefix=1
+
+        # AI Assistant Service
+        - id: ai-assistant-service
+          uri: lb://AI-ASSISTANT-SERVICE
+          predicates:
+            - Path=/api/ai-assistant/**
+          filters:
+            - StripPrefix=1
+
+        # Legacy Adapter Service (routes to core-banking)
+        - id: legacy-adapter-service
+          uri: lb://LEGACY-ADAPTER-SERVICE
+          predicates:
+            - Path=/api/legacy/**
+          filters:
+            - StripPrefix=1
+
+      # Global CORS Configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:  "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:  "*"
+            allowCredentials:  false
+            maxAge: 3600
+
+      # Default filters applied to all routes
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+        - RemoveRequestHeader=Authorization
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Replace with your Keycloak realm issuer URI, e.g. http://localhost:8080/realms/myrealm
+          issuer-uri: http://localhost:8080/realms/your-realm
+          # Optional explicit JWK set URI if issuer discovery not desired
+          # jwk-set-uri: http://localhost:8080/realms/your-realm/protocol/openid-connect/certs
+    keycloak:
+      introspection-uri: http://localhost:8080/realms/your-realm/protocol/openid-connect/token/introspect
+      client-id: gateway
+      client-secret: change-me
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+# Server Configuration
+server:
+  port:  8080
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway, health, info, metrics
+  endpoint:
+    gateway:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
