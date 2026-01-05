@@ -37,7 +37,7 @@ public class SecurityConfig {
 
         // Configure resource server to use opaque token introspection via Keycloak API
         http.oauth2ResourceServer(oauth2 -> oauth2
-                .opaqueToken(ot -> ot.introspector(keycloakOpaqueTokenIntrospector()))
+                .opaqueToken(ot -> ot.introspector(keycloakOpaqueTokenIntrospectorBean()))
         );
 
         // Disable default login form, use bearer tokens only
@@ -46,8 +46,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public OpaqueTokenIntrospector keycloakOpaqueTokenIntrospector() {
+    // Renamed bean factory method to avoid bean name collision with any precompiled class-level bean
+    @Bean("keycloakOpaqueTokenIntrospectorBean")
+    public OpaqueTokenIntrospector keycloakOpaqueTokenIntrospectorBean() {
         return new KeycloakOpaqueTokenIntrospector();
     }
 }

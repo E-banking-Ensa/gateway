@@ -2,22 +2,18 @@ package org.example.microservice.apigateway.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
 public class KeycloakOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     @Value("${security.keycloak.introspection-uri:http://localhost:8080/realms/your-realm/protocol/openid-connect/token/introspect}")
@@ -115,4 +111,3 @@ public class KeycloakOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
         }
     }
 }
-

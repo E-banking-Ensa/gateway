@@ -44,14 +44,6 @@ spring:
           filters:
             - StripPrefix=1
 
-        # AI Assistant Service
-        - id: ai-assistant-service
-          uri: lb://AI-ASSISTANT-SERVICE
-          predicates:
-            - Path=/api/ai-assistant/**
-          filters:
-            - StripPrefix=1
-
         # Legacy Adapter Service (routes to core-banking)
         - id: legacy-adapter-service
           uri: lb://LEGACY-ADAPTER-SERVICE
@@ -85,14 +77,14 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          # Replace with your Keycloak realm issuer URI, e.g. http://localhost:8080/realms/myrealm
-          issuer-uri: http://localhost:8080/realms/your-realm
+          # Point to Keycloak in the Docker network by default; override with KEYCLOAK_ISSUER_URI if needed
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://keycloak:8080/realms/ebanking}
           # Optional explicit JWK set URI if issuer discovery not desired
-          # jwk-set-uri: http://localhost:8080/realms/your-realm/protocol/openid-connect/certs
+          # jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://keycloak:8080/realms/ebanking/protocol/openid-connect/certs}
     keycloak:
-      introspection-uri: http://localhost:8080/realms/your-realm/protocol/openid-connect/token/introspect
-      client-id: gateway
-      client-secret: change-me
+      introspection-uri: ${KEYCLOAK_INTROSPECTION_URI:http://keycloak:8080/realms/ebanking/protocol/openid-connect/token/introspect}
+      client-id: ${KEYCLOAK_CLIENT_ID:gateway}
+      client-secret: ${KEYCLOAK_CLIENT_SECRET:change-me}
 
 # Eureka Client Configuration
 eureka:
@@ -103,11 +95,11 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true
-    hostname: localhost
+    hostname: api-gateway
 
 # Server Configuration
 server:
-  port:  8080
+  port:  8087
 
 # Management endpoints
 management:
