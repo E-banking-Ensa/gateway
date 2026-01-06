@@ -10,7 +10,7 @@ spring:
           predicates:
             - Path=/api/auth/**
           filters:
-            - StripPrefix=1
+            - RewritePath=/api/auth(?<segment>/?.*), /auth${segment}
 
         # User Service
         - id: user-service
@@ -18,39 +18,35 @@ spring:
           predicates:
             - Path=/api/users/**
           filters:
-            - StripPrefix=1
+            - RewritePath=/api/users(?<segment>/?.*), /api/v1/users${segment}
 
         # Account Service
         - id: account-service
           uri: lb://ACCOUNT-SERVICE
           predicates:
             - Path=/api/accounts/**
-          filters:
-            - StripPrefix=1
+          filters: []
 
         # Payment Service
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/payments/**
-          filters:
-            - StripPrefix=1
+          filters: []
 
         # Crypto Service
         - id:  crypto-service
           uri: lb://CRYPTO-SERVICE
           predicates:
             - Path=/api/crypto/**
-          filters:
-            - StripPrefix=1
+          filters: []
 
         # Legacy Adapter Service (routes to core-banking)
         - id: legacy-adapter-service
           uri: lb://LEGACY-ADAPTER-SERVICE
           predicates:
             - Path=/api/legacy/**
-          filters:
-            - StripPrefix=1
+          filters: []
 
       # Global CORS Configuration
       globalcors:
@@ -78,11 +74,11 @@ spring:
       resourceserver:
         jwt:
           # Point to Keycloak in the Docker network by default; override with KEYCLOAK_ISSUER_URI if needed
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://keycloak:8080/realms/ebanking}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/ebanking}
           # Optional explicit JWK set URI if issuer discovery not desired
-          # jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://keycloak:8080/realms/ebanking/protocol/openid-connect/certs}
+          # jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8081/realms/ebanking/protocol/openid-connect/certs}
     keycloak:
-      introspection-uri: ${KEYCLOAK_INTROSPECTION_URI:http://keycloak:8080/realms/ebanking/protocol/openid-connect/token/introspect}
+      introspection-uri: ${KEYCLOAK_INTROSPECTION_URI:http://localhost:8081/realms/ebanking/protocol/openid-connect/token/introspect}
       client-id: ${KEYCLOAK_CLIENT_ID:gateway}
       client-secret: ${KEYCLOAK_CLIENT_SECRET:change-me}
 
